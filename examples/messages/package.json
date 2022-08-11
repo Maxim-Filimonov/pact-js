@@ -16,7 +16,7 @@
   "devDependencies": {
     "@pact-foundation/absolute-version": "0.0.4",
     "@pact-foundation/pact": "10.0.2",
-    "@pact-foundation/pact-core": "^13.6.2",
+    "@pact-foundation/pact-core": "^13.7.2",
     "@types/mocha": "^2.2.48",
     "@types/node": "^8.0.24",
     "axios": "^0.21.2",
