@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
         if (ar || !(i in from)) {
@@ -12,9 +23,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.matcherValueOrString = exports.uuid = exports.fromProviderState = exports.arrayContaining = exports.url = exports.url2 = exports.nullValue = exports.includes = exports.date = exports.time = exports.timestamp = exports.datetime = exports.equal = exports.regex = exports.string = exports.number = exports.decimal = exports.integer = exports.boolean = exports.constrainedArrayLike = exports.atMostLike = exports.atLeastLike = exports.atLeastOneLike = exports.eachLike = exports.eachKeyLike = exports.like = void 0;
+exports.extractPayload = exports.reify = exports.matcherValueOrString = exports.uuid = exports.fromProviderState = exports.arrayContaining = exports.url = exports.url2 = exports.nullValue = exports.includes = exports.date = exports.time = exports.timestamp = exports.datetime = exports.equal = exports.regex = exports.string = exports.number = exports.decimal = exports.integer = exports.boolean = exports.constrainedArrayLike = exports.atMostLike = exports.atLeastLike = exports.atLeastOneLike = exports.eachLike = exports.eachKeyLike = exports.like = exports.isMatcher = void 0;
 var ramda_1 = require("ramda");
 var randexp_1 = __importDefault(require("randexp"));
+function isMatcher(x) {
+    return x != null && x.value !== undefined;
+}
+exports.isMatcher = isMatcher;
 /**
  * Value must match the given template
  * @param template Template to base the comparison on
@@ -440,4 +455,25 @@ var matcherValueOrString = function (obj) {
     return JSON.stringify(obj);
 };
 exports.matcherValueOrString = matcherValueOrString;
+/**
+ * Recurse the object removing any underlying matching guff, returning the raw
+ * example content.
+ */
+function reify(input) {
+    if (isMatcher(input)) {
+        return reify(input.value);
+    }
+    if (Object.prototype.toString.call(input) === '[object Array]') {
+        return input.map(reify);
+    }
+    if (input !== null && typeof input === 'object') {
+        return Object.keys(input).reduce(function (acc, propName) {
+            var _a;
+            return (__assign(__assign({}, acc), (_a = {}, _a[propName] = reify(input[propName]), _a)));
+        }, {});
+    }
+    return input;
+}
+exports.reify = reify;
+exports.extractPayload = reify;
 //# sourceMappingURL=matchers.js.map

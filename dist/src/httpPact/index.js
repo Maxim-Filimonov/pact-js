@@ -77,7 +77,7 @@ exports.Pact = void 0;
 /* eslint-disable no-promise-executor-return */
 var pact_core_1 = __importDefault(require("@pact-foundation/pact-core"));
 var index_1 = require("@pact-foundation/pact-core/src/consumer/index");
-var clc = __importStar(require("cli-color"));
+var cli_color_1 = __importDefault(require("cli-color"));
 var path = __importStar(require("path"));
 var process_1 = __importDefault(require("process"));
 var lodash_1 = require("lodash");
@@ -219,8 +219,8 @@ var Pact = /** @class */ (function () {
             error += "\n\n  ".concat((0, display_1.generateMockServerError)(matchingResults, '\t'));
             /* eslint-disable no-console */
             console.error('');
-            console.error(clc.red('Pact verification failed!'));
-            console.error(clc.red(error));
+            console.error(cli_color_1.default.red('Pact verification failed!'));
+            console.error(cli_color_1.default.red(error));
             /* eslint-enable */
             this.reset();
             throw new verificationError_1.default('Pact verification failed - expected interactions did not match actual.');

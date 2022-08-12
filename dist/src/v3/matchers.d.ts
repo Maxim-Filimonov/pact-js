@@ -7,6 +7,7 @@ export interface Matcher<T> {
     'pact:generator:type'?: string;
     value?: T;
 }
+export declare function isMatcher(x: AnyTemplate): x is Matcher<AnyTemplate>;
 export declare type AnyTemplate = AnyJson | TemplateMap | TemplateArray | Matcher<unknown>;
 interface TemplateMap {
     [key: string]: AnyJson | AnyTemplate;
@@ -179,4 +180,9 @@ export declare function fromProviderState<V extends AnyJson>(expression: string,
  */
 export declare function uuid(example?: string): RegexMatcher;
 export declare const matcherValueOrString: (obj: unknown) => string;
-export {};
+/**
+ * Recurse the object removing any underlying matching guff, returning the raw
+ * example content.
+ */
+export declare function reify(input: AnyTemplate): AnyJson;
+export { reify as extractPayload };

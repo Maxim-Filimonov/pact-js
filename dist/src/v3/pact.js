@@ -149,7 +149,7 @@ var PactV3 = /** @class */ (function () {
     };
     PactV3.prototype.executeTest = function (testFn) {
         return __awaiter(this, void 0, void 0, function () {
-            var scheme, host, port, server, val, matchingResults, e_1, error, success, error;
+            var scheme, host, port, server, val, e_1, matchingResults_1, error, matchingResults, success, error;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -157,7 +157,6 @@ var PactV3 = /** @class */ (function () {
                         host = this.opts.host || '127.0.0.1';
                         port = this.pact.createMockServer(host, this.opts.port, this.opts.tls);
                         server = { port: port, url: "".concat(scheme, "://").concat(host, ":").concat(port), id: 'unknown' };
-                        matchingResults = this.pact.mockServerMismatches(port);
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, 3, , 4]);
@@ -167,11 +166,13 @@ var PactV3 = /** @class */ (function () {
                         return [3 /*break*/, 4];
                     case 3:
                         e_1 = _a.sent();
+                        matchingResults_1 = this.pact.mockServerMismatches(port);
                         error = 'Test failed for the following reasons:';
-                        error += "\n\n  ".concat((0, display_1.generateMockServerError)(matchingResults, '\t'));
+                        error += "\n\n  ".concat((0, display_1.generateMockServerError)(matchingResults_1, '\t'));
                         this.cleanup(false, server);
-                        throw new Error((error += "\n Original exception \n:".concat(e_1)));
+                        throw new Error((error += "\n\n Original exception: \n".concat(e_1)));
                     case 4:
+                        matchingResults = this.pact.mockServerMismatches(port);
                         success = this.pact.mockServerMatchedSuccessfully(port);
                         // Feature flag: allow missing requests on the mock service
                         if (!success && (0, display_1.filterMissingFeatureFlag)(matchingResults).length > 0) {

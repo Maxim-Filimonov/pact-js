@@ -457,5 +457,128 @@ describe('V3 Matchers', function () {
             });
         });
     });
+    describe('#reify', function () {
+        describe('when given an object with no matchers', function () {
+            var object = {
+                some: 'data',
+                more: 'strings',
+                an: ['array'],
+                someObject: {
+                    withData: true,
+                    withNumber: 1,
+                },
+            };
+            it('returns just that object', function () {
+                expect(MatchersV3.reify(object)).to.deep.equal(object);
+            });
+        });
+        describe('when given an object with null values', function () {
+            var object = {
+                some: 'data',
+                more: null,
+                an: [null],
+                someObject: {
+                    withData: true,
+                    withNumber: 1,
+                    andNull: null,
+                },
+            };
+            it('returns just that object', function () {
+                expect(MatchersV3.reify(object)).to.deep.equal(object);
+            });
+        });
+        describe('when given an object with some matchers', function () {
+            var someMatchers = {
+                some: MatchersV3.like('data'),
+                more: 'strings',
+                an: ['array'],
+                another: MatchersV3.eachLike('this'),
+                someObject: {
+                    withData: MatchersV3.like(true),
+                    withTerm: MatchersV3.regex('this|that', 'this'),
+                    withNumber: 1,
+                    withAnotherNumber: MatchersV3.like(2),
+                },
+            };
+            var expected = {
+                some: 'data',
+                more: 'strings',
+                an: ['array'],
+                another: ['this'],
+                someObject: {
+                    withData: true,
+                    withTerm: 'this',
+                    withNumber: 1,
+                    withAnotherNumber: 2,
+                },
+            };
+            it('returns without matching guff', function () {
+                expect(MatchersV3.reify(someMatchers)).to.deep.equal(expected);
+            });
+        });
+        describe('when given a simple matcher', function () {
+            it('removes all matching guff', function () {
+                var expected = 'myawesomeword';
+                var matcher = MatchersV3.regex('\\w+', 'myawesomeword');
+                expect(MatchersV3.isMatcher(matcher)).to.eq(true);
+                expect(MatchersV3.reify(matcher)).to.eql(expected);
+            });
+        });
+        describe('when given a complex nested object with matchers', function () {
+            it('removes all matching guff', function () {
+                var o = MatchersV3.like({
+                    stringMatcher: {
+                        awesomeSetting: MatchersV3.like('a string'),
+                    },
+                    anotherStringMatcher: {
+                        nestedSetting: {
+                            anotherStringMatcherSubSetting: MatchersV3.like(true),
+                        },
+                        anotherSetting: MatchersV3.regex('this|that', 'this'),
+                    },
+                    arrayMatcher: {
+                        lotsOfValueregex: MatchersV3.atLeastOneLike('useful', 3),
+                    },
+                    arrayOfMatcherregex: {
+                        lotsOfValueregex: MatchersV3.atLeastOneLike({
+                            foo: 'bar',
+                            baz: MatchersV3.like('bat'),
+                        }, 3),
+                    },
+                });
+                var expected = {
+                    stringMatcher: {
+                        awesomeSetting: 'a string',
+                    },
+                    anotherStringMatcher: {
+                        nestedSetting: {
+                            anotherStringMatcherSubSetting: true,
+                        },
+                        anotherSetting: 'this',
+                    },
+                    arrayMatcher: {
+                        lotsOfValueregex: ['useful', 'useful', 'useful'],
+                    },
+                    arrayOfMatcherregex: {
+                        lotsOfValueregex: [
+                            {
+                                baz: 'bat',
+                                foo: 'bar',
+                            },
+                            {
+                                baz: 'bat',
+                                foo: 'bar',
+                            },
+                            {
+                                baz: 'bat',
+                                foo: 'bar',
+                            },
+                        ],
+                    },
+                };
+                expect(MatchersV3.reify(o)).to.deep.equal(expected);
+            });
+        });
+    });
 });
 //# sourceMappingURL=matchers.spec.js.map
